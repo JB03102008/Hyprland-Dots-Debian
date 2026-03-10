@@ -48,6 +48,8 @@ window#waybar {
 #cpu,
 #tray,
 #memory,
+#battery,
+#backlight,
 #window,
 #mpris {
   padding: 0.3rem 0.6rem;
@@ -113,4 +115,24 @@ window#waybar.empty #window {
 tooltip {
   background-color: #181825;
   border: 2px solid #89b4fa;
+}
+
+#battery {
+  color: #a6e3a1;
+}
+
+#battery.warning {
+  color: #f9e2af;
+}
+
+#battery.critical {
+  color: #f38ba8;
+}
+
+#battery.charging {
+  color: #94e2d5;
+}
+
+#backlight {
+  color: #f5e0dc;
 }
