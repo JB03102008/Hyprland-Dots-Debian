@@ -101,15 +101,15 @@
   },
   "custom/notification": {
     "escape": true,
-    "exec": "swaync-client -swb",
-    "exec-if": "which swaync-client",
+    "exec": "echo '{\"text\":\"\",\"class\":\"none\"}'",
+    "exec-if": "which dunstctl",
     "format": "{icon}",
     "format-icons": {
       "none": "󰅺",
-      "notification": "󰡟",
+      "notification": "󰡟"
     },
-    "on-click": "sleep 0.1 && swaync-client -t -sw",
+    "on-click": "dunstctl set-paused toggle",
     "return-type": "json",
-    "tooltip": false,
+    "tooltip": false
   },
 }
