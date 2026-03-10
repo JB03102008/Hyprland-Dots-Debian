@@ -1,6 +1,6 @@
 {
     "label" : "lock",
-    "action" : "hyprlock -c /home/jasper/.config/hyprlock/hyprlock.conf",
+    "action" : "hyprlock -c ~/.config/hyprlock/hyprlock.conf",
     "text" : "Lock",
     "keybind" : "l"
 }
