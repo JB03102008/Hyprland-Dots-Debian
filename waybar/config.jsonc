@@ -12,9 +12,11 @@
   "modules-right": [
     "cpu",
     "memory",
+    "backlight",
     "pulseaudio",
     "clock",
     "clock#simpleclock",
+    "battery",
     "tray",
     "custom/notification",
     "custom/power",
@@ -53,6 +55,11 @@
     "show-passive-items": true,
     "spacing": 10,
   },
+  "backlight": {
+    "device": "intel_backlight",
+    "format": " {percent}%",
+    "tooltip": false
+  },
   "clock#simpleclock": {
     "tooltip": false,
     "format": " {:%H:%M}",
@@ -72,6 +79,23 @@
       "on-scroll": 1,
     },
     "tooltip-format": "<span color='#cdd6f4' font='Lexend 16'><tt><small>{calendar}</small></tt></span>",
+  },
+  "battery": {
+    "interval": 10,
+    "states": {
+      "warning": 30,
+      "critical": 15
+    },
+    "format": "{icon} {capacity}%",
+    "format-charging": " {capacity}%",
+    "format-icons": [
+      "",
+      "",
+      "",
+      "",
+      ""
+    ],
+    "tooltip": false
   },
   "cpu": {
     "format": " {usage}%",
