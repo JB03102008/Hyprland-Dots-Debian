@@ -60,7 +60,9 @@ sudo apt install -t testing -y \
   wget \
   cliphist \
   zsh \
-  thunar
+  thunar \
+  hypridle \
+  hyprland-guiutils
 
 echo ">>> Config mappen aanmaken..."
 mkdir -p ~/.config/hypr/conf.d
@@ -85,6 +87,13 @@ cp -r "$TMPDIR/dots/wlogout/."     ~/.config/wlogout/
 if [ -d "$TMPDIR/dots/kitty" ] && [ "$(ls -A "$TMPDIR/dots/kitty")" ]; then
   cp -r "$TMPDIR/dots/kitty/." ~/.config/kitty/
 fi
+
+echo ">>> Fonts installeren..."
+wget -P ~/.local/share/fonts https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip \
+&& cd ~/.local/share/fonts \
+&& unzip JetBrainsMono.zip \
+&& rm JetBrainsMono.zip \
+&& fc-cache -fv
 
 echo ">>> Tijdelijke bestanden opruimen..."
 rm -rf "$TMPDIR"
