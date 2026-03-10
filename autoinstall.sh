@@ -58,7 +58,9 @@ sudo apt install -t testing -y \
   git \
   curl \
   wget \
-  cliphist
+  cliphist \
+  zsh \
+  thunar
 
 echo ">>> Config mappen aanmaken..."
 mkdir -p ~/.config/hypr/conf.d
@@ -105,6 +107,8 @@ EOF
 echo ">>> SDDM inschakelen als display manager..."
 sudo systemctl enable sddm
 sudo systemctl set-default graphical.target
+
+sudo apt remove nautilus
 
 echo ""
 echo "✅ Klaar! SDDM start automatisch op bij de volgende reboot."
