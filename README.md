@@ -4,6 +4,8 @@
 
 - Debian is old, so testing sources need to be enabled for this to work! (at least with 13.3.0)
 
+- Some features are laptop optimized, like battery status and brightness control, but WiFi and Bluetooth are not working yet through waybar.
+
 - Autoinstall.sh is work in progress, feel free to test, but might have some slight problems.
 
 - Some parts of this config are partially or completely used from other repositories, an overview will be provided here:
