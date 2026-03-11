@@ -24,20 +24,21 @@ else
     echo "🔍 System detected as: DESKTOP"
 fi
 
-read -p "Do you want to install specific tools for laptops (brightnessctl, battery-scripts)? (y/n) [Detected: $( [ "$IS_LAPTOP" = true ] && echo "y" || echo "n" )]: " CHASSIS_CHOICE
+read -p "Do you want to install laptop-specific tools (brightnessctl, battery-scripts)? (y/n) [Detected: $( [ "$IS_LAPTOP" = true ] && echo "y" || echo "n" )]: " CHASSIS_CHOICE
 CHASSIS_CHOICE=${CHASSIS_CHOICE:-$( [ "$IS_LAPTOP" = true ] && echo "y" || echo "n" )}
 
 EXTRA_PACKAGES=""
 if [[ "$CHASSIS_CHOICE" =~ ^[Yy]$ ]]; then
-    echo ">>> Laptop tools added to install list..."
-    EXTRA_PACKAGES="brightnessctl bluez bluez-utils networkmanager"
+    echo ">>> Adding laptop tools to install list..."
+    EXTRA_PACKAGES="brightnessctl bluez bluez-utils"
 else
-    echo ">>> Skipping laptop packages."
+    echo ">>> Skipping laptop-only packages."
 fi
 
 # ─────────────────────────────────────────────
-#  Repositories Opschonen & Toevoegen
+#  Repository Management
 # ─────────────────────────────────────────────
+echo ">>> Cleaning up old repositories..."
 sudo sed -i '/deb .*stable/d' /etc/apt/sources.list
 sudo sed -i '/deb .*testing/d' /etc/apt/sources.list
 
@@ -48,6 +49,7 @@ deb http://security.debian.org/debian-security testing-security main contrib non
 deb http://deb.debian.org/debian testing-updates main contrib non-free-firmware
 EOF
 
+echo ">>> Setting APT pinning for testing..."
 sudo tee /etc/apt/preferences.d/testing.pref > /dev/null <<EOF
 Package: *
 Pin: release a=testing
@@ -58,27 +60,52 @@ echo ">>> Running apt update..."
 sudo apt update
 
 # ─────────────────────────────────────────────
-#  Installatie Pakketten
+#  Package Installation
 # ─────────────────────────────────────────────
-echo ">>> Installing needed packages..."
+echo ">>> Installing core packages and NetworkManager..."
 sudo apt install -t testing -y \
   sddm hyprland hyprpaper hyprlock waybar wofi wlogout \
   dunst kitty nautilus firefox-esr pipewire pipewire-pulse \
   wireplumber pavucontrol wl-clipboard playerctl polkit-kde-agent-1 \
   git curl wget cliphist zsh thunar hypridle hyprland-guiutils grim \
+  networkmanager \
   $EXTRA_PACKAGES
 
 # ─────────────────────────────────────────────
-#  Configuratie & Dotfiles
+#  Network Migration (ifupdown to NetworkManager)
+# ─────────────────────────────────────────────
+echo ">>> Migrating network management to NetworkManager..."
+
+# Backup old interfaces file and reset it to loopback only to avoid conflicts
+if [ -f /etc/network/interfaces ]; then
+    echo ">>> Backing up /etc/network/interfaces to /etc/network/interfaces.bak"
+    sudo cp /etc/network/interfaces /etc/network/interfaces.bak
+    sudo tee /etc/network/interfaces > /dev/null <<EOF
+# Standard loopback interface (Managed by ifupdown)
+auto lo
+iface lo inet loopback
+
+# Other interfaces are now managed by NetworkManager
+EOF
+fi
+
+# Disable old networking service and enable NetworkManager
+sudo systemctl stop networking || true
+sudo systemctl disable networking || true
+sudo systemctl enable NetworkManager
+sudo systemctl start NetworkManager
+
+# ─────────────────────────────────────────────
+#  Configuration & Dotfiles
 # ─────────────────────────────────────────────
 echo ">>> Creating config folders..."
 mkdir -p ~/.config/hypr/conf.d ~/.config/hyprlock ~/.config/waybar ~/.config/wofi ~/.config/wlogout ~/.config/kitty
 
-echo ">>> Cloning dotfiles..."
+echo ">>> Cloning dotfiles from repository..."
 TMPDIR=$(mktemp -d)
 git clone https://github.com/JB03102008/Hyprland-Dots-Debian.git "$TMPDIR/dots"
 
-echo ">>> Copying files to ~/.config/..."
+echo ">>> Copying configuration files..."
 cp -r "$TMPDIR/dots/hypr/."     ~/.config/hypr/
 cp -r "$TMPDIR/dots/hyprlock/." ~/.config/hyprlock/
 cp -r "$TMPDIR/dots/waybar/."   ~/.config/waybar/
@@ -92,22 +119,22 @@ fi
 # ─────────────────────────────────────────────
 #  Fonts & Services
 # ─────────────────────────────────────────────
-echo ">>> Installing fonts..."
+echo ">>> Installing JetBrainsMono Nerd Font..."
 wget -P ~/.local/share/fonts https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip \
 && cd ~/.local/share/fonts && unzip JetBrainsMono.zip && rm JetBrainsMono.zip && fc-cache -fv
 
 rm -rf "$TMPDIR"
 
-echo ">>> Making scripts executable..."
+echo ">>> Setting script permissions..."
 [ -f ~/.config/hyprlock/songdetail.sh ] && chmod +x ~/.config/hyprlock/songdetail.sh
 
-echo ">>> Enabling services..."
+echo ">>> Enabling user services..."
 systemctl --user enable --now pipewire pipewire-pulse wireplumber
 sudo systemctl enable sddm
 sudo systemctl set-default graphical.target
 
 # ─────────────────────────────────────────────
-#  ZSH & Extra Apps
+#  ZSH & Additional Apps
 # ─────────────────────────────────────────────
 echo ">>> Installing Oh-My-ZSH..."
 wget -O install_zsh.sh https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh
@@ -115,9 +142,12 @@ sed -i 's:env zsh::g' install_zsh.sh
 sed -i 's:chsh -s .*$::g' install_zsh.sh
 sh install_zsh.sh --unattended && rm install_zsh.sh
 
-read -p "Do you want to run the popular apps script? (y/n): " choice
+read -p "Do you want to run the automated package installation script for popular apps? (y/n): " choice
 if [[ "$choice" =~ ^[Yy]$ ]]; then
+    echo ">>> Running external installation script..."
     curl -sL https://github.com/JB03102008/Hyprland-Dots-Debian/raw/main/autoinstallpackages.sh | bash
 fi
 
-echo "✅ Done! Reboot with: sudo systemctl reboot"
+echo ""
+echo "✅ Done! NetworkManager is now managing your connection."
+echo "   Please reboot your system now by typing: sudo systemctl reboot"
