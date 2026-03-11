@@ -42,3 +42,5 @@ if [ -f "$BACKUP_DIR/monitors.conf" ]; then
 fi
 
 echo ">>> Configs zijn geüpdatet en oude configs zijn gebackupt."
+echo "   Herstart je systeem met:"
+echo "   sudo systemctl reboot"
