@@ -9,14 +9,12 @@ install_package() {
 # Function to fix LibreOffice scaling
 fix_libreoffice_scaling() {
     echo "Applying LibreOffice DPI scaling fix..."
-
     for file in /usr/share/applications/libreoffice-*.desktop; do
         if [ -f "$file" ]; then
             echo "Patching $file"
             sudo sed -i 's|Exec=libreoffice|Exec=env SAL_FORCEDPI=144 libreoffice|g' "$file"
         fi
     done
-
     sudo update-desktop-database /usr/share/applications
     echo "LibreOffice scaling fix applied."
 }
@@ -34,14 +32,10 @@ install_firefox_non_esr() {
     echo "Installing Firefox (non-ESR)..."
     sudo apt update
     sudo apt install -y wget curl
-
     wget -O firefox.tar.bz2 "https://download.mozilla.org/?product=firefox-latest&os=linux64&lang=en-US"
     sudo tar xjf firefox.tar.bz2 -C /opt
-
     sudo ln -sf /opt/firefox/firefox /usr/bin/firefox
-
     rm firefox.tar.bz2
-
     echo "Firefox (non-ESR) is installed."
 }
 
@@ -50,15 +44,10 @@ install_spotify() {
     echo "Installing Spotify..."
     sudo apt update
     sudo apt install -y curl
-
     curl -sS https://download.spotify.com/debian/pubkey.gpg | sudo apt-key add -
-
-    echo "deb http://repository.spotify.com stable non-free" | \
-    sudo tee /etc/apt/sources.list.d/spotify.list
-
+    echo "deb http://repository.spotify.com stable non-free" | sudo tee /etc/apt/sources.list.d/spotify.list
     sudo apt update
     sudo apt install -y spotify-client
-
     echo "Spotify is installed."
 }
 
@@ -74,35 +63,29 @@ show_menu() {
     echo "6) Exit"
 }
 
-# Main part of the script
+# Main script loop
 while true; do
     show_menu
-    read -p "Enter your choice(s) (1-6): " choices
+    read -p "Enter your choice(s) (1-6): " -a choices   # lees als array
 
-    for choice in $choices; do
+    # Als geen invoer, opnieuw tonen
+    if [ ${#choices[@]} -eq 0 ]; then
+        continue
+    fi
+
+    # Loop door keuzes
+    for choice in "${choices[@]}"; do
         case $choice in
-            1)
-                install_package "htop"
-                ;;
-            2)
-                install_package "nvtop"
-                ;;
-            3)
-                install_libreoffice
-                ;;
-            4)
-                install_firefox_non_esr
-                ;;
-            5)
-                install_spotify
-                ;;
-            6)
-                echo "Exiting..."
-                exit 0
-                ;;
-            *)
-                echo "Invalid choice, please try again."
-                ;;
+            1) install_package "htop" ;;
+            2) install_package "nvtop" ;;
+            3) install_libreoffice ;;
+            4) install_firefox_non_esr ;;
+            5) install_spotify ;;
+            6) echo "Exiting..."; exit 0 ;;
+            *) echo "Invalid choice: $choice" ;;
         esac
     done
+
+    echo ""
+    echo "Done processing selected choices."
 done
