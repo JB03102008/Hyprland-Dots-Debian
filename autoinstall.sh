@@ -128,4 +128,4 @@ sudo apt remove nautilus
 echo ""
 echo "✅ Klaar! SDDM start automatisch op bij de volgende reboot."
 echo "   Herstart je systeem met:"
-echo "   sudo reboot"
+echo "   sudo systemctl reboot"
