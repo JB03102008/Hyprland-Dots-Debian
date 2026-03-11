@@ -5,24 +5,24 @@ set -e
 #  Hyprland Setup Script - Debian Testing
 # ─────────────────────────────────────────────
 
-echo "⚠️  WAARSCHUWING: Dit script gaat Debian Testing repo's toevoegen en Hyprland installeren."
-read -p "Weet je zeker dat je wilt doorgaan? (y/n) " -n 1 -r
+echo "⚠️  WARNING! WARNING! WARNING! This script will enable Debian testing APT repositories and install the Hyprland compositor alongside with some tools."
+read -p "Are you sure you want to continue? (y/n) " -n 1 -r
 echo
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
-    echo "Installatie geannuleerd door gebruiker."
+    echo "Installation aborted by user."
     exit 1
 fi
 
 # ─────────────────────────────────────────────
-#  Verwijder eventueel oude repos uit sources.list
+#  Remove old repositories
 # ─────────────────────────────────────────────
 sudo sed -i '/deb .*stable/d' /etc/apt/sources.list
 sudo sed -i '/deb .*testing/d' /etc/apt/sources.list
 
 # ─────────────────────────────────────────────
-#  Voeg alleen Debian Testing repo toe
+#  Add Debian testing repo
 # ─────────────────────────────────────────────
-echo ">>> Debian Testing repo toevoegen..."
+echo ">>> Adding Debian testing repositories..."
 sudo tee /etc/apt/sources.list.d/testing.list > /dev/null <<EOF
 deb http://deb.debian.org/debian testing main contrib non-free non-free-firmware
 deb http://security.debian.org/debian-security testing-security main contrib non-free-firmware
@@ -30,7 +30,7 @@ deb http://deb.debian.org/debian testing-updates main contrib non-free-firmware
 EOF
 
 # ─────────────────────────────────────────────
-#  Pinning zodat testing altijd de standaard wordt
+#  Set testing to default using pinning
 # ─────────────────────────────────────────────
 sudo tee /etc/apt/preferences.d/testing.pref > /dev/null <<EOF
 Package: *
@@ -38,10 +38,10 @@ Pin: release a=testing
 Pin-Priority: 900
 EOF
 
-echo ">>> Pakketlijsten updaten..."
+echo ">>> Running apt update..."
 sudo apt update
 
-echo ">>> Pakketten installeren..."
+echo ">>> Installing needed packages..."
 sudo apt install -t testing -y \
   sddm \
   hyprland \
@@ -71,7 +71,7 @@ sudo apt install -t testing -y \
   hyprland-guiutils \
   grim
 
-echo ">>> Config mappen aanmaken..."
+echo ">>> Creating config folders..."
 mkdir -p ~/.config/hypr/conf.d
 mkdir -p ~/.config/hyprlock
 mkdir -p ~/.config/waybar
@@ -79,11 +79,11 @@ mkdir -p ~/.config/wofi
 mkdir -p ~/.config/wlogout
 mkdir -p ~/.config/kitty
 
-echo ">>> Dotfiles klonen van GitHub..."
+echo ">>> Cloning dotfiles frm JB03102008's Hyprland-Dots-Debian repository..."
 TMPDIR=$(mktemp -d)
 git clone https://github.com/JB03102008/Hyprland-Dots-Debian.git "$TMPDIR/dots"
 
-echo ">>> Dotfiles kopiëren naar ~/.config/..."
+echo ">>> Copying files to ~/.config/..."
 cp -r "$TMPDIR/dots/hypr/."        ~/.config/hypr/
 cp -r "$TMPDIR/dots/hyprlock/."    ~/.config/hyprlock/
 cp -r "$TMPDIR/dots/waybar/."      ~/.config/waybar/
@@ -94,23 +94,23 @@ if [ -d "$TMPDIR/dots/kitty" ] && [ "$(ls -A "$TMPDIR/dots/kitty")" ]; then
   cp -r "$TMPDIR/dots/kitty/." ~/.config/kitty/
 fi
 
-echo ">>> Fonts installeren..."
+echo ">>> Installing fonts..."
 wget -P ~/.local/share/fonts https://github.com/ryanoasis/nerd-fonts/releases/download/v3.0.2/JetBrainsMono.zip \
 && cd ~/.local/share/fonts \
 && unzip JetBrainsMono.zip \
 && rm JetBrainsMono.zip \
 && fc-cache -fv
 
-echo ">>> Tijdelijke bestanden opruimen..."
+echo ">>> Deleting temporary files..."
 rm -rf "$TMPDIR"
 
-echo ">>> songdetail.sh uitvoerbaar maken..."
+echo ">>> Making some scripts executable..."
 chmod +x ~/.config/hyprlock/songdetail.sh
 
-echo ">>> PipeWire inschakelen voor huidige gebruiker..."
+echo ">>> Enabling PipeWire..."
 systemctl --user enable --now pipewire pipewire-pulse wireplumber
 
-echo ">>> Hyprland sessiebestand aanmaken voor SDDM..."
+echo ">>> Creating Hyprland session file for SDDM..."
 sudo tee /usr/share/wayland-sessions/hyprland.desktop > /dev/null <<EOF
 [Desktop Entry]
 Name=Hyprland
@@ -119,7 +119,7 @@ Exec=start-hyprland
 Type=Application
 EOF
 
-echo ">>> SDDM inschakelen als display manager..."
+echo ">>> Enabling SDDM..."
 sudo systemctl enable sddm
 sudo systemctl set-default graphical.target
 
@@ -131,7 +131,17 @@ sed -i.tmp 's:env zsh::g' install.sh
 sed -i.tmp 's:chsh -s .*$::g' install.sh
 sh install.sh
 
+read -p "Do you want to run a script to install some popular apps (y/n): " choice
+
+if [[ "$choice" == "y" || "$choice" == "Y" ]]; then
+    echo "Downloading and running the installation script..."
+    
+    curl -sL https://https://github.com/JB03102008/Hyprland-Dots-Debian/raw/main/autoinstallpackages.sh | bash
+else
+    echo "Exiting without running the installation script."
+fi
+
 echo ""
-echo "✅ Klaar! SDDM start automatisch op bij de volgende reboot."
-echo "   Herstart je systeem met:"
+echo "✅ Done! SDDM wil start automatically at reboot."
+echo "   Please reboot your system now by typing:"
 echo "   sudo systemctl reboot"
