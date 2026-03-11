@@ -49,6 +49,8 @@ window#waybar {
 #tray,
 #memory,
 #battery,
+#network,
+#bluetooth,
 #backlight,
 #window,
 #mpris {
@@ -135,4 +137,20 @@ tooltip {
 
 #backlight {
   color: #f5e0dc;
+}
+
+#network {
+  color: #89b4fa;
+}
+
+#network.disconnected {
+  color: #f38ba8;
+}
+
+#bluetooth {
+  color: #74c7ec;
+}
+
+#bluetooth.disabled {
+  color: #6c7086;
 }
