@@ -14,12 +14,13 @@ if [[ ! $REPLY =~ ^[Yy]$ ]]; then
 fi
 
 # ─────────────────────────────────────────────
-#  Verwijder eventueel oude testing-repos uit sources.list
+#  Verwijder eventueel oude repos uit sources.list
 # ─────────────────────────────────────────────
+sudo sed -i '/deb .*stable/d' /etc/apt/sources.list
 sudo sed -i '/deb .*testing/d' /etc/apt/sources.list
 
 # ─────────────────────────────────────────────
-#  Voeg Debian Testing repo toe in testing.list
+#  Voeg alleen Debian Testing repo toe
 # ─────────────────────────────────────────────
 echo ">>> Debian Testing repo toevoegen..."
 sudo tee /etc/apt/sources.list.d/testing.list > /dev/null <<EOF
@@ -29,16 +30,12 @@ deb http://deb.debian.org/debian testing-updates main contrib non-free-firmware
 EOF
 
 # ─────────────────────────────────────────────
-#  Pinning instellen zodat testing niet automatisch de standaard wordt
+#  Pinning zodat testing altijd de standaard wordt
 # ─────────────────────────────────────────────
 sudo tee /etc/apt/preferences.d/testing.pref > /dev/null <<EOF
 Package: *
 Pin: release a=testing
-Pin-Priority: 100
-
-Package: *
-Pin: release a=stable
-Pin-Priority: 500
+Pin-Priority: 900
 EOF
 
 echo ">>> Pakketlijsten updaten..."
@@ -117,7 +114,7 @@ sudo tee /usr/share/wayland-sessions/hyprland.desktop > /dev/null <<EOF
 [Desktop Entry]
 Name=Hyprland
 Comment=An intelligent dynamic tiling Wayland compositor
-Exec=Hyprland
+Exec=start-hyprland
 Type=Application
 EOF
 
