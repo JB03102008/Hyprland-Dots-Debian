@@ -6,30 +6,65 @@ install_package() {
     sudo apt update && sudo apt install -y $1
 }
 
-# Function to install Firefox (non-ESR) via an alternative method
+# Function to fix LibreOffice scaling
+fix_libreoffice_scaling() {
+    echo "Applying LibreOffice DPI scaling fix..."
+
+    for file in /usr/share/applications/libreoffice-*.desktop; do
+        if [ -f "$file" ]; then
+            echo "Patching $file"
+            sudo sed -i 's|Exec=libreoffice|Exec=env SAL_FORCEDPI=144 libreoffice|g' "$file"
+        fi
+    done
+
+    sudo update-desktop-database /usr/share/applications
+    echo "LibreOffice scaling fix applied."
+}
+
+# Function to install LibreOffice
+install_libreoffice() {
+    echo "Installing LibreOffice..."
+    sudo apt update
+    sudo apt install -y libreoffice
+    fix_libreoffice_scaling
+}
+
+# Function to install Firefox (non-ESR)
 install_firefox_non_esr() {
     echo "Installing Firefox (non-ESR)..."
     sudo apt update
-    sudo apt install -y wget
-    wget -qO- https://dl.mozilla.org/firefox/releases/latest/linux-x86_64/en-US/firefox-$(curl -s https://ftp.mozilla.org/pub/firefox/releases/latest/README.txt | grep -oP '(\d+\.\d+\.\d+)')-en-US.tar.bz2 | sudo tar xjf - -C /opt
+    sudo apt install -y wget curl
+
+    wget -O firefox.tar.bz2 "https://download.mozilla.org/?product=firefox-latest&os=linux64&lang=en-US"
+    sudo tar xjf firefox.tar.bz2 -C /opt
+
     sudo ln -sf /opt/firefox/firefox /usr/bin/firefox
+
+    rm firefox.tar.bz2
+
     echo "Firefox (non-ESR) is installed."
 }
 
-# Function to install Spotify from the official repository
+# Function to install Spotify
 install_spotify() {
     echo "Installing Spotify..."
     sudo apt update
     sudo apt install -y curl
+
     curl -sS https://download.spotify.com/debian/pubkey.gpg | sudo apt-key add -
-    echo "deb http://repository.spotify.com stable non-free" | sudo tee /etc/apt/sources.list.d/spotify.list
+
+    echo "deb http://repository.spotify.com stable non-free" | \
+    sudo tee /etc/apt/sources.list.d/spotify.list
+
     sudo apt update
     sudo apt install -y spotify-client
+
     echo "Spotify is installed."
 }
 
 # Function to display the main menu
 show_menu() {
+    echo ""
     echo "Select the packages you want to install (you can select multiple by entering numbers separated by spaces):"
     echo "1) Htop"
     echo "2) Nvtop"
@@ -44,7 +79,6 @@ while true; do
     show_menu
     read -p "Enter your choice(s) (1-6): " choices
 
-    # Loop through each selected choice
     for choice in $choices; do
         case $choice in
             1)
@@ -54,7 +88,7 @@ while true; do
                 install_package "nvtop"
                 ;;
             3)
-                install_package "libreoffice"
+                install_libreoffice
                 ;;
             4)
                 install_firefox_non_esr
