@@ -65,7 +65,7 @@ sudo apt update
 echo ">>> Installing core packages and NetworkManager..."
 sudo apt install -t testing -y \
   sddm hyprland hyprpaper hyprlock waybar wofi wlogout \
-  dunst kitty nautilus firefox-esr pipewire pipewire-pulse \
+  dunst kitty nautilus firefox-esr pipewire pipewire-pulse libspa-0.2-bluetooth \
   wireplumber pavucontrol wl-clipboard playerctl polkit-kde-agent-1 \
   git curl wget cliphist zsh thunar hypridle hyprland-guiutils grim \
   networkmanager \
