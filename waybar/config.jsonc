@@ -7,7 +7,7 @@
   "gtk-layer-shell": true,
   "passthrough": false,
   "fixed-center": true,
-  "modules-left": ["hyprland/workspaces", "hyprland/window"],
+  "modules-left": ["hyprland/workspaces", "network", "bluetooth", "hyprland/window"],
   "modules-center": ["mpris"],
   "modules-right": [
     "cpu",
@@ -50,6 +50,19 @@
   },
   "hyprland/window": {
     "format": "{title}",
+  },
+  "network": {
+      "format-wifi": "  {essid}",
+      "format-ethernet": "󰈀 {ipaddr}",
+      "format-disconnected": "⚠ disconnected",
+      "tooltip-format": "{ifname} via {gwaddr}",
+      "on-click": "kitty nmtui"
+  },
+  "bluetooth": {
+      "format": " {status}",
+      "format-disabled": " off",
+      "format-connected": " {device_alias}",
+      "on-click": "blueman-manager"
   },
   "tray": {
     "show-passive-items": true,
