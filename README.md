@@ -12,3 +12,8 @@
  - Waybar look is copied from [...]
  - Lockscreen is copied from Vivek's Hyprlock config, can be found here: https://github.com/MrVivekRajan/Hyprlock-Styles
  - [..]
+
+
+TO INSTALL: curl -sSL https://github.com/JB03102008/Hyprland-Dots-Debian/raw/main/autoinstall.sh | bash
+
+TO UPDATE: curl -sSL https://github.com/JB03102008/Hyprland-Dots-Debian/raw/main/configupdate.sh | bash
