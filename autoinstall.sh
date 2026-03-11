@@ -68,7 +68,8 @@ sudo apt install -t testing -y \
   zsh \
   thunar \
   hypridle \
-  hyprland-guiutils
+  hyprland-guiutils \
+  grim
 
 echo ">>> Config mappen aanmaken..."
 mkdir -p ~/.config/hypr/conf.d
