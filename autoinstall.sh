@@ -125,6 +125,12 @@ sudo systemctl set-default graphical.target
 
 sudo apt remove nautilus
 
+echo ">>> Installing Oh-My-ZSH..."
+wget https://github.com/robbyrussell/oh-my-zsh/raw/master/tools/install.sh
+sed -i.tmp 's:env zsh::g' install.sh
+sed -i.tmp 's:chsh -s .*$::g' install.sh
+sh install.sh
+
 echo ""
 echo "✅ Klaar! SDDM start automatisch op bij de volgende reboot."
 echo "   Herstart je systeem met:"
