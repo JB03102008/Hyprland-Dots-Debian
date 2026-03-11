@@ -5,23 +5,32 @@ set -e
 #  Hyprland Setup Script - Debian Testing
 # ─────────────────────────────────────────────
 
-# ─────────────────────────────────────────────
-#  Bevestiging voor start
-# ─────────────────────────────────────────────
 echo "⚠️  WAARSCHUWING: Dit script gaat Debian Testing repo's toevoegen en Hyprland installeren."
 read -p "Weet je zeker dat je wilt doorgaan? (y/n) " -n 1 -r
-echo    # Ga naar een nieuwe regel
+echo
 if [[ ! $REPLY =~ ^[Yy]$ ]]; then
     echo "Installatie geannuleerd door gebruiker."
     exit 1
 fi
 
+# ─────────────────────────────────────────────
+#  Verwijder eventueel oude testing-repos uit sources.list
+# ─────────────────────────────────────────────
+sudo sed -i '/deb .*testing/d' /etc/apt/sources.list
+
+# ─────────────────────────────────────────────
+#  Voeg Debian Testing repo toe in testing.list
+# ─────────────────────────────────────────────
 echo ">>> Debian Testing repo toevoegen..."
 sudo tee /etc/apt/sources.list.d/testing.list > /dev/null <<EOF
 deb http://deb.debian.org/debian testing main contrib non-free non-free-firmware
+deb http://security.debian.org/debian-security testing-security main contrib non-free-firmware
+deb http://deb.debian.org/debian testing-updates main contrib non-free-firmware
 EOF
 
-# Zorg dat testing niet de standaard wordt
+# ─────────────────────────────────────────────
+#  Pinning instellen zodat testing niet automatisch de standaard wordt
+# ─────────────────────────────────────────────
 sudo tee /etc/apt/preferences.d/testing.pref > /dev/null <<EOF
 Package: *
 Pin: release a=testing
@@ -83,7 +92,6 @@ cp -r "$TMPDIR/dots/waybar/."      ~/.config/waybar/
 cp -r "$TMPDIR/dots/wofi/."        ~/.config/wofi/
 cp -r "$TMPDIR/dots/wlogout/."     ~/.config/wlogout/
 
-# Kopieer kitty config als die bestaat
 if [ -d "$TMPDIR/dots/kitty" ] && [ "$(ls -A "$TMPDIR/dots/kitty")" ]; then
   cp -r "$TMPDIR/dots/kitty/." ~/.config/kitty/
 fi
