@@ -108,7 +108,8 @@
       "",
       ""
     ],
-    "tooltip": false
+    "tooltip-discharging": "{time} until empty",
+    "tooltip-charging": "{time} until fully charged"
   },
   "cpu": {
     "format": " {usage}%",
