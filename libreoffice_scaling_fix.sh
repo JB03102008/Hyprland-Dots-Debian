@@ -8,3 +8,7 @@
     done
     sudo update-desktop-database /usr/share/applications
     echo "LibreOffice scaling fix applied."
+
+### FOR DIFFERENT SCALING OPTIONS:
+# SAL_FORCEDPI=144 for 150%
+# SAL_FORCEDPI=192 for 200%
