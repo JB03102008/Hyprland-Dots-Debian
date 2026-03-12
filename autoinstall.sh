@@ -72,6 +72,19 @@ sudo apt install -t testing -y \
   $EXTRA_PACKAGES
 
 # ─────────────────────────────────────────────
+#  Fix Hyprland .desktop file
+# ─────────────────────────────────────────────
+echo ">>> Fixing Hyprland .desktop session file..."
+sudo tee /usr/share/wayland-sessions/hyprland.desktop > /dev/null <<EOF
+[Desktop Entry]
+Name=Hyprland
+Comment=An intelligent dynamic tiling Wayland compositor
+Exec=start-hyprland
+Type=Application
+DesktopNames=Hyprland
+EOF
+
+# ─────────────────────────────────────────────
 #  Network Migration (ifupdown to NetworkManager)
 # ─────────────────────────────────────────────
 echo ">>> Migrating network management to NetworkManager..."
