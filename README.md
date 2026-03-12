@@ -17,3 +17,5 @@
 TO INSTALL: curl -sSL https://github.com/JB03102008/Hyprland-Dots-Debian/raw/main/autoinstall.sh | bash
 
 TO UPDATE: curl -sSL https://github.com/JB03102008/Hyprland-Dots-Debian/raw/main/configupdate.sh | bash
+
+TO RUN PACKAGE INSTALL SCRIPT STANDALONE: curl -sSL https://github.com/JB03102008/Hyprland-Dots-Debian/raw/main/autoinstallpackages.sh | bash
