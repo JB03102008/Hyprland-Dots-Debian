@@ -58,7 +58,7 @@ show_menu() {
     echo "Select the package you want to install:"
     echo "1) Htop"
     echo "2) Nvtop"
-    echo "3) LibreOffice"
+    echo "3) LibreOffice with HighRes screen fix"
     echo "4) Firefox (non-ESR)"
     echo "5) Spotify"
     echo "6) Exit"
