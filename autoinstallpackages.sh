@@ -24,7 +24,7 @@ fix_libreoffice_scaling() {
 install_libreoffice() {
     echo "Installing LibreOffice..."
     sudo apt update -y
-    sudo apt install -y libreoffice
+    sudo apt install -y libreoffice libreoffice-kf6 libreoffice-plasma
     fix_libreoffice_scaling
 }
 
